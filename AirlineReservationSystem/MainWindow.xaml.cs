@@ -63,6 +63,7 @@ namespace AirlineReservationSystem
               
                 
                 reservations =  operations.addBookings(dateSlotMenu.Text, sourceSlotMenu.Text, destinationSlotMenu.Text, nameInput.Text, readAge, readPhone, readPassport, emailInput.Text,/* randomReferenceNo.ToString(),*/travelTypeRadioGroup,selectedIndexEditRecord);
+                saveBtnState();
             }
         }
 
@@ -260,6 +261,7 @@ namespace AirlineReservationSystem
                 passportInput.Text = reservation.Traveller.PassportNumber.ToString();
                 emailInput.Text = reservation.Traveller.EmailId.ToString();
                 businessClass.IsChecked = true;
+                editBtnState();
             }
           
         }
@@ -291,12 +293,14 @@ namespace AirlineReservationSystem
                     TextWriter t = new StreamWriter(XmlFileName);
                     serializer.Serialize(t, reservations);
                     t.Close();
+                    editBtnState();
+                    saveBtnState();
                 }
                 catch (Exception)
                 {
 
                 }
-                // resetForm();
+                 resetForm();
                 
             if (reservations.Count() == 0)
             {             
@@ -306,6 +310,54 @@ namespace AirlineReservationSystem
             {
                 MessageBox.Show("Reservation Done ✔");
             }
+        }
+
+        private void saveBtnState()
+        {
+            if (save.IsEnabled)
+            {
+                save.IsEnabled = false;
+            }
+            else
+            {
+                save.IsEnabled = true;
+            }
+        } 
+        private void addBtnState()
+        {
+            if (addBooking.IsEnabled)
+            {
+                addBooking.IsEnabled = false;
+            }
+            else
+            {
+                addBooking.IsEnabled = true;
+            }
+        } 
+        private void editBtnState()
+        {
+            if (edit.IsEnabled && selectedIndexEditRecord != -1)
+            {
+                edit.IsEnabled = false;
+            }
+            else
+            {
+                edit.IsEnabled = true;
+            }
+        }
+        private void resetForm()
+        {
+            dateSlotMenu.SelectedIndex = 0;
+            sourceSlotMenu.SelectedIndex = 0;
+            destinationSlotMenu.SelectedIndex = 0;
+            nameInput.Text = string.Empty;
+            ageInput.Text = string.Empty;
+            phoneInput.Text = string.Empty;
+            passportInput.Text = string.Empty;
+            emailInput.Text = string.Empty;
+            economyClass.IsChecked = false;
+            firstClass.IsChecked = false;
+            businessClass.IsChecked = false;
         }
     }
 }

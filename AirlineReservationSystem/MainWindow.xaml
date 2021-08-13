@@ -135,7 +135,7 @@
                 <Button Content="Add" Name="addBooking" Grid.Row="15" Grid.Column="0" HorizontalAlignment="Left" Margin="18,10,0,0" Width="100" Click="addAppointmentButton"  />
                 <Button Content="Edit" Name="edit" Grid.Row="15" Grid.Column="1" HorizontalAlignment="Left" Margin="10,10,0,0" Width="100" Click="Edit_Record_Button"  />
                 <Button Content="Delete" Name="delete" Grid.Row="15" Grid.Column="2" HorizontalAlignment="Left" Margin="0,10,0,0" Width="100" Click="Delete_Button" />
-                <Button Content="Save" Name="save" Grid.Row="15" Grid.Column="3" HorizontalAlignment="Left" Margin="0,10,0,0" Width="100" Click="saveBooking" />
+                <Button Content="Save" Name="save" Grid.Row="15" Grid.Column="3" HorizontalAlignment="Left" Margin="0,10,0,0" Width="100" Click="saveBooking" IsEnabled="False" />
                 <Label Name="noBookingErrorLabel"  Grid.Row="15" Content="No Bookings Made" Grid.Column="4" Foreground="Red" VerticalAlignment="Center" Margin="0,0,5,0" Visibility="Hidden" />
 
                 <TextBox Name="SearchField" Grid.Row="15" Grid.Column="4"  ToolTip="Search By Name" RenderTransformOrigin="1.741,0.942" Margin="40.4,23,10.2,7.2" Height="Auto" Width="131"/>
