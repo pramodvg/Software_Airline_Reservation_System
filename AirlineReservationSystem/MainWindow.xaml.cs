@@ -198,7 +198,7 @@ namespace AirlineReservationSystem
         {
             ReservationsList reservationsList = operations.ReadFromXmlFile();
             operations.updateRervationList(reservationsList);
-            //reservationsList = operations.ReadFromXmlFile();
+            
             if (reservationsList != null)
             {
                 var fetchQuery = from reservation in reservationsList.bookingList
@@ -240,11 +240,17 @@ namespace AirlineReservationSystem
         }
         private void Edit_Record_Button(object sender, RoutedEventArgs e)
         {
+            reservations = operations.ReadFromXmlFile();
             Reservation reservation = (Reservation)displayGrid.SelectedItem;
             if (reservation != null)
             {
-                selectedIndexEditRecord = displayGrid.SelectedIndex;
-                MessageBox.Show(selectedIndexEditRecord.ToString());
+               // selectedIndexEditRecord = displayGrid.SelectedIndex;
+                selectedIndexEditRecord = reservations.bookingList.FindIndex(delegate (Reservation r)
+                {
+                    return r.BookingReferenceNumber.Equals(reservation.BookingReferenceNumber, StringComparison.Ordinal);
+                });
+
+               // MessageBox.Show(selectedIndexEditRecord.ToString());
                // dateSlotMenu.SelectedIndex = dateSlotMenu.Items.IndexOf(reservation.TravelDate);
                // sourceSlotMenu.SelectedIndex = sourceSlotMenu.Items.IndexOf(reservation.TravelSource);
                // destinationSlotMenu.SelectedIndex = destinationSlotMenu.Items.IndexOf(reservation.TravelDestination);

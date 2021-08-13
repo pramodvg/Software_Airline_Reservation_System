@@ -51,6 +51,7 @@ namespace AirlineReservationSystem
                 randomReferenceNo =
                    uint.Parse( reservations[updateIndexRecord].BookingReferenceNumber);
             }
+
             bookings.BookingReferenceNumber = randomReferenceNo.ToString();
             bookings.TravelDate = dateSlot;
             bookings.TravelSource = source;
