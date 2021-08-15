@@ -13,6 +13,8 @@ namespace AirlineReservationSystem
         private string travelDestination;
         private string bookingReferenceNumber;
         private string services;
+        private Boolean optedCommonServices;
+        private Boolean optedSpecialServices;
         private Traveller traveller;
 
         public string TravelDate { get => travelDate; set => travelDate = value; }
@@ -21,5 +23,7 @@ namespace AirlineReservationSystem
         public string BookingReferenceNumber { get => bookingReferenceNumber; set => bookingReferenceNumber = value; }
         public Traveller Traveller { get => traveller; set => traveller = value; }
         public string Services { get => services; set => services = value; }
+        public bool OptedCommonServices { get => optedCommonServices; set => optedCommonServices = value; }
+        public bool OptedSpecialServices { get => optedSpecialServices; set => optedSpecialServices = value; }
     }
 }

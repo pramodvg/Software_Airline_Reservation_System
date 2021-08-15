@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
@@ -24,18 +25,29 @@ namespace AirlineReservationSystem
     /// </summary>
     public partial class MainWindow : Window
     {
-     
+  public enum RadioTypes
+        {
+            first_class,
+            business_class,
+            economy_class,
+        }
         string XmlFileName = "Reservations.xml";
         string travelTypeRadioGroup = string.Empty;
-        uint readAge,readPhone,readPassport;
+        uint readAge, readPhoneNumber;
         ReservationsList reservations = new ReservationsList();
         Operations operations = new Operations();
         int selectedIndexEditRecord = -1;
+
+        private ObservableCollection<Reservation> reservationlist = null;
+
+        public ObservableCollection<Reservation> Reservations { get => reservationlist; set => reservationlist = value; }
+
         public MainWindow()
         {
             InitializeComponent();
+            Reservations = new ObservableCollection<Reservation>();
         }
-
+        
         private void RadioButton_Checked(object sender, RoutedEventArgs e)
         {
             RadioButton rb = (RadioButton)sender;
@@ -43,37 +55,97 @@ namespace AirlineReservationSystem
             {
                 case "firstClass":
                     travelTypeRadioGroup = "first_class";
+                    s1.IsEnabled = true;
+                    s4.IsEnabled = true;
+                    s2.IsEnabled = false;
+                    s3.IsEnabled = false;
+                    s2.IsChecked = false;
+                    s3.IsChecked = false;
                     break;
                 case "businessClass":
                     travelTypeRadioGroup = "business_class";
+                    s1.IsEnabled = true;
+                    s3.IsEnabled = true;
+                    s2.IsEnabled = false;
+                    s2.IsChecked = false;
+                    s4.IsEnabled = false;
+                    s4.IsChecked = false;
                     break;
                 case "economyClass":
                     travelTypeRadioGroup = "economy_class";
+                    s1.IsEnabled = true;
+                    s2.IsEnabled = true;
+                    s4.IsEnabled = false;
+                    s4.IsChecked = false;
+                    s3.IsChecked = false;
+                    s3.IsEnabled = false;
                     break;
                 default:
                     break;
             }
         }
-
+        //add reservations to the observablelist
         private void addAppointmentButton(object sender, RoutedEventArgs e)
         {
-           bool flag = validateFields(dateSlotMenu.Text, sourceSlotMenu.Text, destinationSlotMenu.Text , nameInput.Text, ageInput.Text, phoneInput.Text, passportInput.Text, emailInput.Text);
-            if (flag)
+            if (addDataToReservationList())
             {
-              
-                
-                reservations =  operations.addBookings(dateSlotMenu.Text, sourceSlotMenu.Text, destinationSlotMenu.Text, nameInput.Text, readAge, readPhone, readPassport, emailInput.Text,/* randomReferenceNo.ToString(),*/travelTypeRadioGroup,selectedIndexEditRecord);
-                saveBtnState();
+                resetForm();
             }
+            
         }
 
+        //validate fields and add data to the observablelist
+        private bool addDataToReservationList()
+        {
+            bool optedCommonServices = false;
+            bool optedSpecialServices = false;
+            bool flag = validateFields(dateSlotMenu.Text, sourceSlotMenu.Text, destinationSlotMenu.Text, nameInput.Text, ageInput.Text, phoneInput.Text, passportInput.Text, emailInput.Text);
+            if (flag)
+            {
+                if(s1.IsChecked == true)
+                {
+                    optedCommonServices = true;
+                }
+           
+                switch (travelTypeRadioGroup)
+                {
+                    case nameof(RadioTypes.first_class):
+                        if (s4.IsChecked == true)
+                        {
+                            optedSpecialServices = true;
+                        }
+                        break;
+                    case nameof(RadioTypes.business_class):
+                        if (s3.IsChecked == true)
+                        {
+                            optedSpecialServices = true;
+                        }
+                        break;
+                    case nameof(RadioTypes.economy_class):
+                        if (s2.IsChecked == true)
+                        {
+                            optedSpecialServices = true;
+                        }
+                        break;
+                    default:
+                        Console.WriteLine("None");
+                        break;
+
+                }
+                reservations = operations.addBookings(dateSlotMenu.Text, sourceSlotMenu.Text, destinationSlotMenu.Text, nameInput.Text, readAge, readPhoneNumber, passportInput.Text, emailInput.Text,travelTypeRadioGroup, selectedIndexEditRecord,optedCommonServices,optedSpecialServices);
+                if(selectedIndexEditRecord == -1)
+                MessageBox.Show("Reservation Added");    
+            }
+            return flag;
+        }
 
 
         // Function To validate every inputs
         private bool validateFields(string dateSlot, string sourceMenu, string destinationMenu ,string name, string age,string phoneNo, string passportNo, string emailId )
         {
-
             bool flag = true;
+            
+            
             if (dateSlot.Equals(""))
             {
                 datelSotErrorLabel.Visibility = Visibility.Visible;
@@ -83,7 +155,7 @@ namespace AirlineReservationSystem
             {
                 datelSotErrorLabel.Visibility = Visibility.Hidden;
             }
-            if (sourceMenu.Equals(""))
+            if (sourceMenu.Equals("") || sourceMenu.Equals(destinationMenu))
             {
                 sourceSlotErrorLabel.Visibility = Visibility.Visible;
                 flag = false;
@@ -92,7 +164,7 @@ namespace AirlineReservationSystem
             {
                 sourceSlotErrorLabel.Visibility = Visibility.Hidden;
             }
-            if (destinationMenu.Equals(""))
+            if (destinationMenu.Equals("") || destinationMenu.Equals(sourceMenu))
             {
                 destinationSlotErrorLabel.Visibility = Visibility.Visible;
                 flag = false;
@@ -114,7 +186,20 @@ namespace AirlineReservationSystem
                 nameErrorLabel.Visibility = Visibility.Hidden;
 
             }
-            if (!uint.TryParse(phoneNo, out readPhone) || (phoneNo.Length != 10))
+            if (!uint.TryParse(age, out readAge) || (readAge < 1) || (readAge > 100))
+            {
+                ageInput.BorderBrush = Brushes.Red;
+                ageInput.Foreground = Brushes.Red;
+                ageErrorLabel.Visibility = Visibility.Visible;
+                flag = false;
+            }
+            else
+            {
+                ageInput.BorderBrush = Brushes.LightGray;
+                ageErrorLabel.Visibility = Visibility.Hidden;
+
+            }
+            if (!uint.TryParse(phoneNo, out readPhoneNumber) || (phoneNo.Length != 10))
             {
                 phoneInput.BorderBrush = Brushes.Red;
                 phoneInput.Foreground = Brushes.Red;
@@ -127,7 +212,7 @@ namespace AirlineReservationSystem
                 phoneErrorLabel.Visibility = Visibility.Hidden;
 
             }
-            if (!uint.TryParse(passportNo, out readPassport) && passportNo.Equals(""))
+            if (passportNo.Equals(""))
             {
                 passportInput.BorderBrush = Brushes.Red;
                 passportInput.Foreground = Brushes.Red;
@@ -148,7 +233,7 @@ namespace AirlineReservationSystem
                
                 emailInput.BorderBrush = Brushes.LightGray;
                 emailErrorLabel.Visibility = Visibility.Hidden;
-                flag = true;
+               
             }
             else
             {
@@ -157,31 +242,6 @@ namespace AirlineReservationSystem
                 emailErrorLabel.Visibility = Visibility.Visible;
                 flag = false;
             }
-               
-
-            if (!uint.TryParse(age, out readAge) || (readAge < 1) || (readAge > 100))
-            {
-                ageInput.BorderBrush = Brushes.Red;
-                ageInput.Foreground = Brushes.Red;
-                ageErrorLabel.Visibility = Visibility.Visible;
-                flag = false;
-            }
-            else
-            {
-                ageInput.BorderBrush = Brushes.LightGray;
-                ageErrorLabel.Visibility = Visibility.Hidden;
-
-            }
-           
-           /* if ((s1.IsChecked == false) && (s1.IsChecked == false) && (s1.IsChecked == false))
-            {
-                serviceErrorLabel.Visibility = Visibility.Visible;
-                flag = false;
-            }
-            else
-            {
-                serviceErrorLabel.Visibility = Visibility.Hidden;
-            }*/
             if(travelTypeRadioGroup == String.Empty)
             {
                 travelTypeErrorLabel.Visibility = Visibility.Visible;
@@ -194,26 +254,13 @@ namespace AirlineReservationSystem
             return flag;
         }
 
-       // ReservationsList commonreservationsList;
+        //display records in the grid
         private void displayReservations_Click(object sender, RoutedEventArgs e)
         {
             ReservationsList reservationsList = operations.ReadFromXmlFile();
-            operations.updateRervationList(reservationsList);
-            
-            if (reservationsList != null)
-            {
-                var fetchQuery = from reservation in reservationsList.bookingList
-                                 orderby reservation.BookingReferenceNumber
-                                 select reservation;
-                displayGrid.ItemsSource = fetchQuery;
-                
-            }
-            else
-            {
-                //noRecordsLabel.Visibility = Visibility.Visible;
-            }
+            displayDataInGrid(reservationsList);
         }
-
+        //search record from grid based on reference number
         private void searchReservation_click(object sender, RoutedEventArgs e)
         {
             ReservationsList reservationsList = operations.ReadFromXmlFile();
@@ -239,6 +286,7 @@ namespace AirlineReservationSystem
                // noRecordsLabel.Visibility = Visibility.Visible;
             }
         }
+        //edit selected record 
         private void Edit_Record_Button(object sender, RoutedEventArgs e)
         {
             reservations = operations.ReadFromXmlFile();
@@ -246,33 +294,122 @@ namespace AirlineReservationSystem
             if (reservation != null)
             {
                // selectedIndexEditRecord = displayGrid.SelectedIndex;
-                selectedIndexEditRecord = reservations.bookingList.FindIndex(delegate (Reservation r)
+                selectedIndexEditRecord = reservations.bookingList.FindIndex(delegate (Reservation reservationObject)
                 {
-                    return r.BookingReferenceNumber.Equals(reservation.BookingReferenceNumber, StringComparison.Ordinal);
+                    return reservationObject.BookingReferenceNumber.Equals(reservation.BookingReferenceNumber, StringComparison.Ordinal);
                 });
 
-               // MessageBox.Show(selectedIndexEditRecord.ToString());
-               // dateSlotMenu.SelectedIndex = dateSlotMenu.Items.IndexOf(reservation.TravelDate);
-               // sourceSlotMenu.SelectedIndex = sourceSlotMenu.Items.IndexOf(reservation.TravelSource);
-               // destinationSlotMenu.SelectedIndex = destinationSlotMenu.Items.IndexOf(reservation.TravelDestination);
+                // MessageBox.Show(selectedIndexEditRecord.ToString());
+                 dateSlotMenu.SelectedIndex = getIndexOfComboBox(dateSlotMenu, reservation.TravelDate);
+                sourceSlotMenu.SelectedIndex = getIndexOfComboBox(sourceSlotMenu, reservation.TravelSource);
+                destinationSlotMenu.SelectedIndex = getIndexOfComboBox(destinationSlotMenu,reservation.TravelDestination);
                 nameInput.Text = reservation.Traveller.TravellerName;
                 ageInput.Text = reservation.Traveller.TravellerAge.ToString();
                 phoneInput.Text = reservation.Traveller.PhoneNumber.ToString();
                 passportInput.Text = reservation.Traveller.PassportNumber.ToString();
+                string type = reservation.Traveller.GetType().Name;
+                if (reservation.OptedCommonServices)
+                {
+                    s1.IsChecked = true;
+                    s1.IsEnabled = true;
+                }
+                else
+                {
+                    s1.IsChecked = false;
+                    s1.IsEnabled = true;
+                }
+                if (type == "EconomyTraveller")
+                {
+                    economyClass.IsChecked = true;
+                    if (reservation.OptedSpecialServices)
+                    {
+                        s2.IsChecked = true;
+                    }
+                    s2.IsEnabled = true;
+                }
+                else if(type == "BusinessClassTraveller")
+                {
+                    businessClass.IsChecked = true;
+                    if (reservation.OptedSpecialServices)
+                    {
+                        s3.IsChecked = true;
+                    }
+                    s3.IsEnabled = true;
+                }
+                else {
+                    firstClass.IsChecked = true;
+                    if (reservation.OptedSpecialServices)
+                    {
+                        s4.IsChecked = true;
+                    }
+                      s4.IsEnabled = true;
+                }
                 emailInput.Text = reservation.Traveller.EmailId.ToString();
-                businessClass.IsChecked = true;
-                editBtnState();
+                editErrorLabel.Visibility = Visibility.Hidden;
             }
-          
+            else
+            {
+                editErrorLabel.Visibility = Visibility.Visible;
+            }
+
+        }
+        
+        private int getIndexOfComboBox(ComboBox comboBox,string matchValue)
+        {
+            var comboBoxItem = comboBox.Items.OfType<ComboBoxItem>().FirstOrDefault(x => x.Content.ToString() == matchValue);
+            return comboBox.SelectedIndex = comboBox.Items.IndexOf(comboBoxItem);
         }
 
+        //delete selected record from grid
         private void Delete_Button(object sender, RoutedEventArgs e)
         {
-            int indexOfSelectedRecord = displayGrid.SelectedIndex;
-           
-                reservations = operations.deleteRecord(indexOfSelectedRecord);
-         
-               
+            reservations = operations.ReadFromXmlFile();
+            if (reservations.Count() > 0)
+            {
+                
+                Reservation reservation = (Reservation)displayGrid.SelectedItem;
+                if(reservations != null && reservation != null)
+                {
+                    int indexOfSelectedRecord = reservations.bookingList.FindIndex(delegate (Reservation Object)
+                    {
+                        return Object.BookingReferenceNumber.Equals(reservation.BookingReferenceNumber, StringComparison.Ordinal);
+                    });
+
+                    reservations = operations.deleteRecord(indexOfSelectedRecord);
+                    saveDataToXmlFile();
+                    displayDataInGrid(reservations);
+
+   
+                    deleteErrorLabel.Visibility = Visibility.Hidden;
+                }
+                else
+                {
+                    deleteErrorLabel.Visibility = Visibility.Visible;
+
+                }
+
+
+            }
+            else
+            {
+                deleteErrorLabel.Visibility = Visibility.Visible;
+            }
+
+        }
+
+        private void displayDataInGrid(ReservationsList reservationsList)
+        {
+            operations.updateRervationList(reservationsList);
+
+            if (reservationsList != null)
+            {
+                var fetchQuery = from reservation in reservationsList.bookingList
+                                 orderby reservation.BookingReferenceNumber
+                                 select reservation;
+                displayGrid.ItemsSource = fetchQuery;
+
+            }
+        
         }
 
         private void onTextChange(object sender, TextChangedEventArgs e)
@@ -286,65 +423,45 @@ namespace AirlineReservationSystem
         {
 
             // Write data into Xml File
-            selectedIndexEditRecord = -1;
-                try
+            if (selectedIndexEditRecord != -1)
+            {
+                if (addDataToReservationList())
                 {
-                    XmlSerializer serializer = new XmlSerializer(typeof(ReservationsList));
-                    TextWriter t = new StreamWriter(XmlFileName);
-                    serializer.Serialize(t, reservations);
-                    t.Close();
-                    editBtnState();
-                    saveBtnState();
+                     selectedIndexEditRecord = -1;
+                    resetForm();
                 }
-                catch (Exception)
-                {
-
-                }
-                 resetForm();
-                
+            }
+           
+            saveDataToXmlFile();
+           
+            displayDataInGrid(reservations);
             if (reservations.Count() == 0)
-            {             
+            {
                 noBookingErrorLabel.Visibility = Visibility.Visible;
             }
             else
             {
-                MessageBox.Show("Reservation Done ✔");
+                noBookingErrorLabel.Visibility = Visibility.Hidden;
             }
         }
 
-        private void saveBtnState()
+        
+
+        private void saveDataToXmlFile()
         {
-            if (save.IsEnabled)
+            try
             {
-                save.IsEnabled = false;
+                XmlSerializer serializer = new XmlSerializer(typeof(ReservationsList));
+                TextWriter t = new StreamWriter(XmlFileName);
+                serializer.Serialize(t, reservations);
+                t.Close();
             }
-            else
+            catch (Exception)
             {
-                save.IsEnabled = true;
-            }
-        } 
-        private void addBtnState()
-        {
-            if (addBooking.IsEnabled)
-            {
-                addBooking.IsEnabled = false;
-            }
-            else
-            {
-                addBooking.IsEnabled = true;
-            }
-        } 
-        private void editBtnState()
-        {
-            if (edit.IsEnabled && selectedIndexEditRecord != -1)
-            {
-                edit.IsEnabled = false;
-            }
-            else
-            {
-                edit.IsEnabled = true;
+
             }
         }
+ 
         private void resetForm()
         {
             dateSlotMenu.SelectedIndex = 0;
@@ -358,6 +475,17 @@ namespace AirlineReservationSystem
             economyClass.IsChecked = false;
             firstClass.IsChecked = false;
             businessClass.IsChecked = false;
+            s1.IsChecked = false;
+            s2.IsChecked = false;
+            s3.IsChecked = false;
+            s4.IsChecked = false;
+            s1.IsEnabled = false;
+            s2.IsEnabled = false;
+            s3.IsEnabled = false;
+            s4.IsEnabled = false;
+            editErrorLabel.Visibility = Visibility.Hidden;
+            deleteErrorLabel.Visibility = Visibility.Hidden;
+            noBookingErrorLabel.Visibility = Visibility.Hidden;
         }
     }
 }

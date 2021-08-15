@@ -5,12 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AirlineReservationSystem"
         mc:Ignorable="d"
-        Title="MainWindow" Height="750" Width="1000">
+        Title="MainWindow" Height="750" Width="1400">
+    <Window.Resources>
+        <local:AgeConverter x:Key="AgeConverter"/>
+    </Window.Resources>
     <Grid>
+       
         <StackPanel Orientation="Vertical">
             <Label Content="Airline Reservation System" HorizontalAlignment="Stretch" FontWeight="Bold" Margin="0,0,0,10" FontSize="14" Foreground="White" Background="DarkOliveGreen" VerticalAlignment="Center" Width="900"/>
        
             <Grid>
+                
                 <Grid.Resources>
                 <Style TargetType="Label">
                     <Setter Property="FontSize" Value="13"/>
@@ -58,6 +63,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -67,7 +73,10 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
                 <Label Content="Choose Travel Date" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="10,0,0,0"/>
                 <ComboBox x:Name="dateSlotMenu" Grid.Column="1" Margin="10,0,10,0" Width="140" Height="20" Grid.Row="1" SelectedIndex="0">
@@ -88,7 +97,7 @@
                     <ComboBoxItem Content="Dubai"/>
                     <ComboBoxItem Content="Paris"/>
                 </ComboBox>
-                <Label Name="sourceSlotErrorLabel"  Grid.Row="2" Content="Please Select Date SLot" Grid.Column="2" Foreground="Red" VerticalAlignment="Center" Margin="0,0,5,0" Visibility="Hidden" />
+                <Label Name="sourceSlotErrorLabel"  Grid.Row="2" Content="Please Select Valid Source" Grid.Column="2" Foreground="Red" VerticalAlignment="Center" Margin="0,0,5,0" Visibility="Hidden" />
 
                 <Label Content="Choose Travel Destination" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="10,0,0,0"/>
                 <ComboBox x:Name="destinationSlotMenu" Grid.Row="3" Grid.Column="1" Margin="10,0,10,0" Width="140" Height="20"  SelectedIndex="0">
@@ -98,31 +107,31 @@
                     <ComboBoxItem Content="Dubai"/>
                     <ComboBoxItem Content="Paris"/>
                 </ComboBox>
-                <Label Name="destinationSlotErrorLabel"  Grid.Row="3" Content="Please Select Date SLot" Grid.Column="2" Foreground="Red" VerticalAlignment="Center" Margin="0,0,5,0" Visibility="Hidden" />
+                <Label Name="destinationSlotErrorLabel"  Grid.Row="3" Content="Please Select Valid Destination" Grid.Column="2" Foreground="Red" VerticalAlignment="Center" Margin="0,0,5,0" Visibility="Hidden" />
 
                 <Label Content="Enter Traveller Name" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="10,0,0,0"/>
                 <TextBox Name="nameInput"  Grid.Row="4" Grid.Column="1" ToolTip="Enter Your Name" TextChanged="onTextChange"/>
                 <Label Name="nameErrorLabel"  Grid.Row="4" Content="Please Enter Name" Grid.Column="2" Foreground="Red" VerticalAlignment="Center" Margin="0,0,5,0" Visibility="Hidden" />
 
                 <Label Content="Enter Traveller age" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                <TextBox Name="ageInput"  Grid.Row="5" Grid.Column="1" ToolTip="Enter Your Name" TextChanged="onTextChange"/>
+                <TextBox Name="ageInput"  Grid.Row="5" Grid.Column="1" ToolTip="Enter Your Age" TextChanged="onTextChange"/>
                 <Label Name="ageErrorLabel"  Grid.Row="5" Content="Please Enter Age" Grid.Column="2" Foreground="Red" VerticalAlignment="Center" Margin="0,0,5,0" Visibility="Hidden" />
 
                 <Label Content="Enter Phone Number" Grid.Row="6" Grid.Column="0" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                <TextBox Name="phoneInput"  Grid.Row="6" Grid.Column="1" ToolTip="Enter Your Name" TextChanged="onTextChange"/>
+                <TextBox Name="phoneInput"  Grid.Row="6" Grid.Column="1" ToolTip="Enter Your Phone Number" TextChanged="onTextChange"/>
                 <Label Name="phoneErrorLabel"  Grid.Row="6" Content="Please Enter Phone Number" Grid.Column="2" Foreground="Red" VerticalAlignment="Center" Margin="0,0,5,0" Visibility="Hidden" />
 
                 <Label Content="Enter Passport Number" Grid.Row="7" Grid.Column="0" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                <TextBox Name="passportInput"  Grid.Row="7" Grid.Column="1" ToolTip="Enter Your Name" TextChanged="onTextChange"/>
+                <TextBox Name="passportInput"  Grid.Row="7" Grid.Column="1" ToolTip="Enter Your Passport Number" TextChanged="onTextChange"/>
                 <Label Name="passportErrorLabel"  Grid.Row="7" Content="Please Enter passport Number" Grid.Column="2" Foreground="Red" VerticalAlignment="Center" Margin="0,0,5,0" Visibility="Hidden" />
 
                 <Label Content="Enter Email Id" Grid.Row="8" Grid.Column="0" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                <TextBox Name="emailInput"  Grid.Row="8" Grid.Column="1" ToolTip="Enter Your Name" TextChanged="onTextChange"/>
+                <TextBox Name="emailInput"  Grid.Row="8" Grid.Column="1" ToolTip="Enter Your Email Id" TextChanged="onTextChange"/>
                 <Label Name="emailErrorLabel"  Grid.Row="8" Content="Please Enter Email Id" Grid.Column="2" Foreground="Red" VerticalAlignment="Center" Margin="0,0,5,0" Visibility="Hidden" />
 
                 <Label Content="Choose Type Of Traveller" Grid.Row="9" Grid.Column="0" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                <RadioButton x:Name="firstClass" Grid.Row="9" Grid.Column="1" Margin="10,5,0,5" Content="First Class" HorizontalAlignment="Left"  VerticalAlignment="Center" GroupName="travelTypeGroup" Checked="RadioButton_Checked"/>
-                <RadioButton x:Name="businessClass" Grid.Row="9" Grid.Column="2"  Margin="0,5,0,5" Content="Business Class" HorizontalAlignment="Left"  VerticalAlignment="Center" GroupName="travelTypeGroup" Checked="RadioButton_Checked"/>
+                <RadioButton x:Name="firstClass" Grid.Row="9" Grid.Column="1" Margin="10,5,0,5"  Content="First Class" HorizontalAlignment="Left"  VerticalAlignment="Center" GroupName="travelTypeGroup" Checked="RadioButton_Checked"/>
+                <RadioButton x:Name="businessClass" Grid.Row="9" Grid.Column="2"  Margin="0,5,0,5"  Content="Business Class" HorizontalAlignment="Left"  VerticalAlignment="Center" GroupName="travelTypeGroup" Checked="RadioButton_Checked"/>
                 <RadioButton x:Name="economyClass" Grid.Row="9" Grid.Column="3" Margin="0,5,0,5" Content="Economy" HorizontalAlignment="Left" VerticalAlignment="Center" GroupName="travelTypeGroup" Checked="RadioButton_Checked" />
                 <Label Name="travelTypeErrorLabel"  Grid.Row="9" Grid.Column="4" Content="Please Select One Option" Foreground="Red" VerticalAlignment="Center" Margin="0,0,5,0" Visibility="Hidden" />
                 <Label Content="Services" Grid.Row="10" Grid.Column="0" VerticalAlignment="Center" Margin="10,0,0,0"/>
@@ -130,21 +139,27 @@
                 <CheckBox x:Name="s2" Grid.Row="11" Grid.Column="1"  Margin="10,5,0,5" Content="Economy Passengers" HorizontalAlignment="Left"  VerticalAlignment="Center" />
                 <CheckBox x:Name="s3" Grid.Row="12" Grid.Column="1"  Margin="10,5,0,5" Content="Business Class Passengers" HorizontalAlignment="Left" VerticalAlignment="Center" />
                 <CheckBox x:Name="s4" Grid.Row="13" Grid.Column="1"  Margin="10,5,0,5" Content="First Class Passengers" HorizontalAlignment="Left" VerticalAlignment="Center" />
-                <Label Name="serviceErrorLabel"  Grid.Row="13" Grid.Column="4" Content="Please Select service" Foreground="Red" VerticalAlignment="Center" Margin="0,0,5,0" Visibility="Hidden" />
 
                 <Button Content="Add" Name="addBooking" Grid.Row="15" Grid.Column="0" HorizontalAlignment="Left" Margin="18,10,0,0" Width="100" Click="addAppointmentButton"  />
                 <Button Content="Edit" Name="edit" Grid.Row="15" Grid.Column="1" HorizontalAlignment="Left" Margin="10,10,0,0" Width="100" Click="Edit_Record_Button"  />
+                <Label Name="editErrorLabel"  Grid.Row="16" Grid.Column="1" Content="Please Select A Row" Foreground="Red" VerticalAlignment="Center" Margin="0,0,5,0" Visibility="Hidden" />
                 <Button Content="Delete" Name="delete" Grid.Row="15" Grid.Column="2" HorizontalAlignment="Left" Margin="0,10,0,0" Width="100" Click="Delete_Button" />
-                <Button Content="Save" Name="save" Grid.Row="15" Grid.Column="3" HorizontalAlignment="Left" Margin="0,10,0,0" Width="100" Click="saveBooking" IsEnabled="False" />
-                <Label Name="noBookingErrorLabel"  Grid.Row="15" Content="No Bookings Made" Grid.Column="4" Foreground="Red" VerticalAlignment="Center" Margin="0,0,5,0" Visibility="Hidden" />
-
-                <TextBox Name="SearchField" Grid.Row="15" Grid.Column="4"  ToolTip="Search By Name" RenderTransformOrigin="1.741,0.942" Margin="40.4,23,10.2,7.2" Height="Auto" Width="131"/>
-                <Button Content="Search Appointment" Name="SearchAppointment" ToolTip="Search By Name" Grid.Row="15" Margin="0,18,0,8" Grid.Column="5" HorizontalAlignment="Left" Width="131" Click="searchReservation_click" />
+                <Label Name="deleteErrorLabel"  Grid.Row="16" Grid.Column="2" Content="Please Select A Row" Foreground="Red" VerticalAlignment="Center" Margin="0,0,5,0" Visibility="Hidden" />
+                <Button Content="Save To File" Name="save" Grid.Row="15" Grid.Column="3" HorizontalAlignment="Left" Margin="0,10,0,0" Width="100" Click="saveBooking" />
+                <Label Name="noBookingErrorLabel"  Grid.Row="16" Content="Add bookings" Grid.Column="3" Foreground="Red" VerticalAlignment="Center" Margin="0,0,5,0" Visibility="Hidden" />
+                <Button Content="Display Data" Name="show" Grid.Row="15" Grid.Column="4" Margin="10,10,0,0" HorizontalAlignment="right" Width="130"   Click="displayReservations_Click"/>
+                <TextBox Name="SearchField" Grid.Row="15" Grid.Column="5"  ToolTip="Search By BookingReferenceNumber" Margin="20,10,10,0" Height="30" Width="131"/>
+                <Button Content="Search Appointment" Name="SearchAppointment" ToolTip="Search By BookingReferenceNumber" Grid.Row="15" Margin="0,18,0,8" Grid.Column="6" HorizontalAlignment="Left" Width="131" Click="searchReservation_click" />
             </Grid>
 
             <DataGrid x:Name="displayGrid" HorizontalAlignment="Center" Height="200" 
-                  VerticalAlignment="Top" Width="900" Margin="0,15,0,15"
+                  VerticalAlignment="Top" Width="1300" Margin="0,30,0,15"
                   ItemsSource="{Binding Reservation}" AutoGenerateColumns="False">
+                <DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow">
+                        <Setter Property="Background" Value="{Binding Path=., Converter={StaticResource AgeConverter}}" />
+                    </Style>
+                </DataGrid.RowStyle>
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Date" Binding="{Binding TravelDate}"/>
                     <DataGridTextColumn Header="Booking Number" Binding="{Binding BookingReferenceNumber}"/>
@@ -158,7 +173,7 @@
                     <DataGridTextColumn Header="Services" Binding="{Binding Services}"/>
                 </DataGrid.Columns>
             </DataGrid>
-            <Button Content="Display Data" x:Name="show" Margin="20,0,0,0" HorizontalAlignment="Left" Width="130"  Height="28" Click="displayReservations_Click"/>
+            <!--<Button Content="Display Data" x:Name="show" Margin="20,0,0,0" HorizontalAlignment="Left" Width="130"  Height="28" Click="displayReservations_Click"/>-->
         </StackPanel>
     </Grid>
 </Window>

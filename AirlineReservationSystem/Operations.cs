@@ -10,6 +10,13 @@ namespace AirlineReservationSystem
 {
     class Operations
     {
+        public enum RadioTypes
+        {
+            first_class,
+            business_class,
+            economy_class,
+        }
+
         string XmlFileName = "Reservations.xml";
         
         uint randomReferenceNo = 0;
@@ -18,6 +25,7 @@ namespace AirlineReservationSystem
 
         }
 
+        //read from xml file
         public ReservationsList ReadFromXmlFile()
         {
             ReservationsList reservations = null;
@@ -35,9 +43,8 @@ namespace AirlineReservationSystem
             return reservations;
         }
 
-
         ReservationsList reservations = new ReservationsList();
-        public ReservationsList addBookings(string dateSlot,string source,string destination, string name, uint age, uint phoneNo, uint passportNo, string emailId,/* string bookingReference,*/string travelTypeRadioGroup, int updateIndexRecord)
+        public ReservationsList addBookings(string dateSlot,string source,string destination, string name, uint age, uint phoneNo, string passportNo, string emailId,string travelTypeRadioGroup, int updateIndexRecord,bool optedCommonServices,bool optedSpecialServices)
         {
             Reservation bookings = new Reservation();
            var rand = new Random();
@@ -56,31 +63,78 @@ namespace AirlineReservationSystem
             bookings.TravelDate = dateSlot;
             bookings.TravelSource = source;
             bookings.TravelDestination = destination;
+            bookings.OptedCommonServices = optedCommonServices;
+            bookings.OptedSpecialServices = optedSpecialServices;
             try
             {
                 switch (travelTypeRadioGroup)
                 {
-                    case "first_class":
+                    case nameof(RadioTypes.first_class):
                         FirstClassTraveller traveller = new FirstClassTraveller(name, age, phoneNo, passportNo, emailId);
                         bookings.Traveller = traveller;
-                        bookings.Services = traveller.ProvideServices();
+                        if(optedCommonServices == true && optedSpecialServices == false)
+                        {
+                            bookings.Services = traveller.PassengerMasks() + traveller.PassengerSanitisers();
+                        }
+                        if (optedCommonServices == true && optedSpecialServices == true)
+                        {
+                            bookings.Services = traveller.ProvideServices();
+                        }
+                        if (optedCommonServices == false && optedSpecialServices == false)
+                        {
+                            bookings.Services = "No Services Opted";
+                        }
+                        if (optedCommonServices == false && optedSpecialServices == true)
+                        {
+                            bookings.Services = traveller.SpecialServices();
+                        }
                         break;
-                    case "business_class":
+                    case nameof(RadioTypes.business_class):
                         BusinessClassTraveller businessTraveller = new BusinessClassTraveller(name, age, phoneNo, passportNo, emailId);
                         bookings.Traveller = businessTraveller;
-                        bookings.Services = businessTraveller.ProvideServices();
+                        if (optedCommonServices == true && optedSpecialServices == false)
+                        {
+                            bookings.Services = businessTraveller.PassengerMasks() + businessTraveller.PassengerSanitisers();
+                        }
+                        if (optedCommonServices == true && optedSpecialServices == true)
+                        {
+                            bookings.Services = businessTraveller.ProvideServices();
+                        }
+                        if (optedCommonServices == false && optedSpecialServices == false)
+                        {
+                            bookings.Services = "No Services Opted";
+                        }
+                        if (optedCommonServices == false && optedSpecialServices == true)
+                        {
+                            bookings.Services = businessTraveller.SpecialServices();
+                        }
                         break;
-                    case "economy_class":
+                    case nameof(RadioTypes.economy_class):
                         EconomyTraveller economyTraveller = new EconomyTraveller(name, age, phoneNo, passportNo, emailId);
                         bookings.Traveller = economyTraveller;
-                        bookings.Services = economyTraveller.ProvideServices();
+                        if (optedCommonServices == true && optedSpecialServices == false)
+                        {
+                            bookings.Services = economyTraveller.PassengerMasks() + economyTraveller.PassengerSanitisers();
+                        }
+                        if (optedCommonServices == true && optedSpecialServices == true)
+                        {
+                            bookings.Services = economyTraveller.ProvideServices();
+                        }
+                        if (optedCommonServices == false && optedSpecialServices == false)
+                        {
+                            bookings.Services = "No Services Opted";
+                        }
+                        if (optedCommonServices == false && optedSpecialServices == true)
+                        {
+                            bookings.Services = economyTraveller.SpecialServices();
+                        }
                         break;
                     default:
                         Console.WriteLine("None");
                         break;
 
                 }
-                //bookings.Traveller = new FirstClassTraveller(name, age, phoneNo, passportNo, emailId); 
+
             }
             catch (IOException e)
             {
@@ -97,12 +151,13 @@ namespace AirlineReservationSystem
             return reservations;
         }
 
-       
+       //update the reservation list
         public void updateRervationList(ReservationsList reservationsList)
         {
             reservations = reservationsList;
         }
 
+        //delete the record
         public ReservationsList deleteRecord(int index)
         {
             reservations.RemoveAt(index);

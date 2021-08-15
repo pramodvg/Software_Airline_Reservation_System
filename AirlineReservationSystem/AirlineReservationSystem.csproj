@@ -55,12 +55,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="RandomGenerator.cs" />
+    <Compile Include="AgeConverter.cs" />
     <Compile Include="Reservation.cs" />
     <Compile Include="BusinessClassTraveller.cs" />
     <Compile Include="EconomyTraveller.cs" />
     <Compile Include="FirstClassTraveller.cs" />
-    <Compile Include="ITraveller.cs" />
     <Compile Include="Operations.cs" />
     <Compile Include="ReservationsList.cs" />
     <Compile Include="Traveller.cs" />

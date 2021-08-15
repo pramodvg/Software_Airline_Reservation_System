@@ -22,7 +22,6 @@ namespace AirlineReservationSystem
             bookingList.Add(bookings);
         }
 
-      
         public void RemoveAt(int index)
         {
             bookingList.RemoveAt(index);

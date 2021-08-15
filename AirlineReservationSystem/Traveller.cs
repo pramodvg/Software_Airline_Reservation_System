@@ -9,20 +9,20 @@ namespace AirlineReservationSystem
 {
     [Serializable]
     [XmlInclude(typeof(BusinessClassTraveller)), XmlInclude(typeof(EconomyTraveller)), XmlInclude(typeof(FirstClassTraveller))]
-    public abstract class Traveller : ITraveller
+    public abstract class Traveller 
     {
         private string travellerName;
         private uint travellerAge;
         private uint phoneNumber;
-        private uint passportNumber;
+        private string passportNumber;
         private string emailId;
       
-
+        
         protected Traveller()
         {
         }
 
-        protected Traveller(string travellerName, uint travellerAge, uint phoneNumber, uint passportNumber, string emailId)
+        protected Traveller(string travellerName, uint travellerAge, uint phoneNumber, string passportNumber, string emailId)
         {
             this.travellerName = travellerName;
             this.travellerAge = travellerAge;
@@ -35,18 +35,20 @@ namespace AirlineReservationSystem
         public string TravellerName { get => travellerName; set => travellerName = value; }
         public uint TravellerAge { get => travellerAge; set => travellerAge = value; }
         public uint PhoneNumber { get => phoneNumber; set => phoneNumber = value; }
-        public uint PassportNumber { get => passportNumber; set => passportNumber = value; }
+        public string PassportNumber { get => passportNumber; set => passportNumber = value; }
         public string EmailId { get => emailId; set => emailId = value; }
 
+        //BaseClass Method
         public string PassengerMasks()
         {
-            return "Masks provided";
+            return "Masks provided ";
         }
+        //BaseClass Method
         public string PassengerSanitisers()
         {
-            return "Hand Sanitizers provided";
+            return "Hand Sanitizers provided ";
         }
-
+        //virtual provide services method
         public virtual string ProvideServices()
         {
             StringBuilder availedServices = new StringBuilder();
@@ -54,7 +56,9 @@ namespace AirlineReservationSystem
             return availedServices.ToString();
          
         }
-
+        //abstract method overriden in the derived class
+        public abstract string SpecialServices();
+        //abstract method overriden in the derived class
         public abstract string PrioritySeats();
     }
 }
